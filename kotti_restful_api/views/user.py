@@ -19,6 +19,7 @@ import zipfile
 import logging
 import mimetypes
 import subprocess
+import urlparse
 import transaction
 from datetime import datetime
 import colander
@@ -118,12 +119,12 @@ class UserViews(BaseView):
             print e
             try:
                 params = json.loads(self.request.body)
-                login = params.get("username", "")
-                password = params.get("password", "")
             except Exception as e:
                 print e
-                login = ""
-                password = ""
+                params = dict(urlparse.parse_qsl(self.request.body))
+            
+            login = params.get("username", "")
+            password = params.get("password", "")
         if login and password:
             user = kotti_login._find_user(login)
             if user is None:
